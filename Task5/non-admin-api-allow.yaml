@@ -1,0 +1,60 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: web-systems
+spec:
+  podSelector: {}          # Выбираем все pod в namespace
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nonadmin-traffic
+  namespace: web-systems
+spec:
+  # Разрешим обмен трафиком между pod'ами, у которых role=back-end-api
+  # и теми, у кого role=front-end (в обе стороны).
+  podSelector:
+    matchLabels:
+      role: back-end-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              role: front-end
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              role: front-end
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-admin-traffic
+  namespace: web-systems
+spec:
+  # Разрешим обмен трафиком между pod'ами, у которых role=admin-back-end-api
+  # и теми, у кого role=admin-front-end (в обе стороны).
+  podSelector:
+    matchLabels:
+      role: admin-back-end-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              role: admin-front-end
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              role: admin-front-end

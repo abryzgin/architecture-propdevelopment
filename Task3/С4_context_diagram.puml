@@ -1,0 +1,23 @@
+@startuml
+!define C4P https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master
+!includeurl C4P/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+TITLE PropDevelopment: Система «Умный дом» (Контекст)
+
+' Акторы
+Person(owner, "Собственник", "Владелец квартиры в ЖК PropDevelopment, использует мобильное приложение для управления сервисами.")
+Person_Ext(partnerOps, "Оператор сервиса SmartHome", "Сотрудник партнёра, администрирует систему интеллектуального домофона/шлагбаума")
+
+' Системы
+System(propdev, "PropDevelopment", "Основная ИТ-система PropDevelopment, включает мобильное приложение для собственников и бэкенд-сервисы.")
+System_Ext(smarthome, "SmartHome Partner Platform", "Партнёрская платформа, предоставляющая сервисы 'интеллектуальный домофон' и 'интеллектуальный шлагбаум'.")
+System(propMobile, "Мобильное приложение собственников", "iOS/Android App", "Позволяет управлять сервисами компании и системой «Умный дом». (Часть PropDevelopment)")
+
+' Связи
+Rel(owner, propMobile, "Управляет своей недвижимостью и сервисами 'Умный дом'")
+Rel(propMobile, smarthome, "Вызовы API: управление домофоном, шлагбаумом, передача биометрических/номерных данных", "HTTPS + OAuth/OpenID")
+Rel(propMobile, propdev, "Вызовы API: авторизация, данные о собственности", "HTTPS")
+Rel(smarthome, partnerOps, "Мониторинг и администрирование", "Веб-интерфейс")
+
+@enduml
